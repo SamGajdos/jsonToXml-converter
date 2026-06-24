@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.beust.jcommander.JCommander;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -36,8 +37,17 @@ public class App {
     private static final LocalDate from = LocalDate.of(2025, 1, 1);
     private static final LocalDate to   = LocalDate.of(2026, 12, 31);
 
-    public static void main(String[] args) throws Exception {
-        LOGGER.info("Hello from Logger!");
+    public static void main(String[] argv) throws Exception {
+        
+        for (String arg : argv) {
+            LOGGER.info(arg);
+        }
+
+        Args args = new Args();
+        JCommander.newBuilder()
+              .addObject(args)
+              .build()
+              .parse(argv);
 
         String testJson = """
         [
