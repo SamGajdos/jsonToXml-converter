@@ -1,8 +1,12 @@
 package io.github.samGajdos.converter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.IParameterValidator;
+import com.beust.jcommander.IParametersValidator;
+import com.beust.jcommander.IStringConverter;
 import com.beust.jcommander.ParameterException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -28,18 +32,19 @@ public class Args {
         validateWith = PathDir.class)
     private String vystup;
 
-    @Parameters(paremetersValidators = platnostOdPlatnostDoMutualExl.class)   
-    class paramDates {
-        @Parameter(names = "--platnostOd", required = true,
-            description = "dátum platnosti od vo formáte YYYY-MM-DD",
-            validateWith = IODate.class)
-        private String platnostOd;
+    @Parameter(names = "--platnostOd", required = true,
+        description = "dátum platnosti od vo formáte YYYY-MM-DD",
+        converter = DateConverter.class)
+    private LocalDate platnostOd;
 
-        @Parameter(names = "--platnostDo", required = true,
-            description = "dátum platnosti do vo formáte YYYY-MM-DD",
-            validateWith = IODate.class)
-        private String platnostDo;
-    }
+    @Parameter(names = "--platnostDo", required = true,
+        description = "dátum platnosti do vo formáte YYYY-MM-DD",
+        converter = DateConverter.class)
+    private LocalDate platnostDo;
+
+    @Parameter(names = "--help", help = true)
+    private boolean help;
+
 
     public static class PathDir implements IParameterValidator {
         public void validate(String name, String value) throws ParameterException {
@@ -57,19 +62,27 @@ public class Args {
                 LocalDate.parse(value, formatter);
             } catch (DateTimeParseException e) {
                 throw new ParameterException("Parameter " + name + " should be a valid date in format YYYY-MM-DD");
-            }  
+            }
         }
     }
 
-    public static class platnostOdPlatnostDoMutualExl implements IParameterValidator {
+    public static class DateConverter implements IStringConverter<LocalDate> {
         @Override
-        public void validate(Map<String, Object> parameters) throws ParameterException {  
-            LocalDate pOd = LocalDate.parse(parameters.get("--platnostOd"));
-            LocalDate pDo = LocalDate.parse(parameters.get("--platnostDo"));
-            
-            if (pDo.isBefore(pOd)) {
-                throw new ParameterException("Value of platnostOd must be before the platnostDo");
+        public LocalDate convert(String value) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            try {
+                return LocalDate.parse(value, formatter);
+            } catch (DateTimeParseException e) {
+                throw new ParameterException("Value: " + value + " should be a valid date in format YYYY-MM-DD");
             }
-        } 
+        }
+    }
+
+    public String validateDateInterval() {
+        if (platnostOd.isAfter(platnostDo)) {
+            return "Value of the platnostOd can't be after the platnostDo\n";
+        } else {
+          return "";
+        }
     }
 }

@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import generated.Messages;
 import generated.MessageType;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -39,15 +41,8 @@ public class App {
 
     public static void main(String[] argv) throws Exception {
         
-        for (String arg : argv) {
-            LOGGER.info(arg);
-        }
+        Args args = processArgs(argv);
 
-        Args args = new Args();
-        JCommander.newBuilder()
-              .addObject(args)
-              .build()
-              .parse(argv);
 
         String testJson = """
         [
@@ -73,7 +68,7 @@ public class App {
             
             String errors = validate(message);
             if (errors != "") {
-               logError(message, errors);
+               logErrorMsg(message, errors);
                continue; 
             }
 
@@ -133,9 +128,37 @@ public class App {
         return amountWithVat;
     }
 
-    public static void logError(MessageDto message, String errString) {
+    public static void logErrorMsg(MessageDto message, String errString) {
         LOGGER.error("Found incorrect values in this JSON item: \n" + message.toString());
         errString.lines().forEach(LOGGER::error);
-        LOGGER.error("Skipping this message entry\n\n");
+        LOGGER.error("Skipping this message entry in this processing\n\n");
+    }
+
+    public static Args processArgs(String[] argv) {
+        for (String arg : argv) {
+            LOGGER.debug(arg);
+        }
+
+        Args args = new Args();
+        JCommander jc = JCommander.newBuilder().addObject(args).build();
+        try {
+            jc.parse(argv);
+        } catch (ParameterException e) {
+            logErrorArgWithExit(e.getMessage());
+            jc.usage();
+        }
+
+        String errMsg = args.validateDateInterval();
+        if (!errMsg.isEmpty()) {
+            logErrorArgWithExit(errMsg);
+        }
+
+        return args;
+    }
+
+    public static void logErrorWithExit(String errString) {
+        errString.lines().forEach(LOGGER::error);
+        LOGGER.error("Exiting the app with return code 1");
+        System.exit(1);
     }
 }

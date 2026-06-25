@@ -94,10 +94,9 @@
     </dependency>
     <!-- Source: https://mvnrepository.com/artifact/com.beust/jcommander -->
     <dependency>
-        <groupId>com.beust</groupId>
+        <groupId>org.jcommander</groupId>
         <artifactId>jcommander</artifactId>
-        <version>1.82</version>
-        <scope>compile</scope>
+        <version>3.0</version>
     </dependency>
   </dependencies>
 

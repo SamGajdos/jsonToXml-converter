@@ -19,6 +19,7 @@ public class MessageDto {
     @NotNull(message = "attribute 'amount' is Empty\n")
     private BigDecimal amount;
     
+    // TODO add attribute vat to message
     @Min(0)
     @Max(100)
     private int vat;
