@@ -1,14 +1,20 @@
 package io.github.samGajdos.converter;
 
-import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.time.LocalDate;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.io.File;
+import java.io.IOException;
 import generated.Messages;
 import generated.MessageType;
 import com.beust.jcommander.JCommander;
@@ -22,9 +28,9 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import org.modelmapper.ModelMapper;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Marshaller;
+import org.apache.commons.io.FilenameUtils;
 
 
 /**
@@ -36,59 +42,69 @@ public class App {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
 
-    private static final LocalDate from = LocalDate.of(2025, 1, 1);
-    private static final LocalDate to   = LocalDate.of(2026, 12, 31);
-
     public static void main(String[] argv) throws Exception {
         
         Args args = processArgs(argv);
+        String inputDir = args.getVstup();
+        String outputDir = args.getVystup();
+        LocalDate validFrom = args.getPlatnostOd();
+        LocalDate validTo = args.getPlatnostDo();
 
+        List<Path> jsonPaths = jsonFilePaths(inputDir);
 
-        String testJson = """
-        [
-          { "id": "MSG001", "type": "ORDER",   "created": "2025-01-05", "amount": 120.50, "vat": 20 },
-          { "id": "MSG002", "type": "INVOICE", "created": "2025-12-20", "amount": 89.00,  "vat": 20 },
-          { "id": "MSG003", "type": "ORDER",   "created": "", "amount": 10.00,  "vat": 10 },
-          { "id": "",       "type": "ORDER",   "created": "2026-02-01", "amount": 15.10,  "vat": 200}
-        ]
-        """;
+        // Iterate through files
+        for(Path jPath : jsonPaths) {
+            //String testJson = new String(Files.readAllBytes(jPath));
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        List<MessageDto> messages = objectMapper.readValue(testJson, new TypeReference<List<MessageDto>>(){}); 
-
-        // MessageDto[] messages = objectMapper.readValue(testJson,MessageDto[].class);
-
-        // List<MessageType> messageTypeList = objectMapper.readValue(testJson, new TypeReference<List<MessageType>>(){});
-        // Messages messagesXml = new Messages();
-        // messagesXml.getMessage().addAll(messageTypeList);
-           
-        Messages messagesXml = new Messages();
-
-        for (MessageDto message : messages) {
+            //LOGGER.info(testJson);
             
-            String errors = validate(message);
-            if (errors != "") {
-               logErrorMsg(message, errors);
-               continue; 
+            // Read json items - Messages
+            ObjectMapper objectMapper = new ObjectMapper();
+            LOGGER.info(jPath.toString());
+            // TODO ad try catch for jsonParseException
+            List<MessageDto> messages = objectMapper.readValue(jPath.toFile(), new TypeReference<List<MessageDto>>(){});            
+             Messages messagesXml = new Messages();
+
+            for (MessageDto message : messages) {  
+                String errors = validate(message, validFrom, validTo);
+                if (!errors.isEmpty()) {
+                   logErrorMsg(message, errors);
+                   continue; 
+                }
+
+                // TODO add try catch block here?
+                message.setAmountWithVat(calculateAmountWithVat(message));
+                
+                //Map to xsd schema: MessageDto -> MessageType
+                MessageMapper messageMapper = new MessageMapper();
+                MessageType messageXSD = messageMapper.map(message);
+                messagesXml.getMessage().add(messageXSD);
             }
 
-            // TODO add try catch block here?
-            message.setAmountWithVat(calculateAmountWithVat(message));
+            // TODO: add jaxbexception
             
-            //Conversion part
-            MessageMapper messageMapper = new MessageMapper();
-            MessageType messageXSD = messageMapper.map(message);
-            messagesXml.getMessage().add(messageXSD);
-        }
+            JAXBContext context = JAXBContext.newInstance(Messages.class);
+            Marshaller mar = context.createMarshaller();
+            mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-        // TODO: add jaxbexception
-        JAXBContext context = JAXBContext.newInstance(Messages.class);
-        Marshaller mar = context.createMarshaller();
-        mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        mar.marshal(messagesXml, new File("./basic.xml"));
+            String jsonBaseName = jPath.getFileName().toString();
+            String jsonBaseWIthoutExt = FilenameUtils.removeExtension(jsonBaseName);
+            Path xmlPath = Paths.get(outputDir, jsonBaseWIthoutExt + ".xml");
+            mar.marshal(messagesXml, new File(xmlPath.toString()));
+        }
     }
 
-    public static String validate(MessageDto message) {
+    // Source: Stack Overflow and Chat GPT
+    public static List<Path> jsonFilePaths(String dir) throws IOException {
+        try (Stream<Path> stream = Files.walk(Paths.get(dir), 1)) {
+            return stream
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().endsWith(".json"))
+                    .toList();
+        }
+    }
+
+    public static String validate(MessageDto message, LocalDate validFrom, LocalDate validTo) {
             String errors = "";
             
             // Beans validation
@@ -106,7 +122,7 @@ public class App {
             try {
                 createdDate = LocalDate.parse(message.getCreated());
 
-                if (createdDate.isBefore(from) || createdDate.isAfter(to)) {
+                if (createdDate.isBefore(validFrom) || createdDate.isAfter(validTo)) {
                     errors += "attribute 'created': Outside of specified range\n";
                 }
             }
@@ -144,13 +160,13 @@ public class App {
         try {
             jc.parse(argv);
         } catch (ParameterException e) {
-            logErrorArgWithExit(e.getMessage());
+            logErrorWithExit(e.getMessage());
             jc.usage();
         }
 
         String errMsg = args.validateDateInterval();
         if (!errMsg.isEmpty()) {
-            logErrorArgWithExit(errMsg);
+            logErrorWithExit(errMsg);
         }
 
         return args;

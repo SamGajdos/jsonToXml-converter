@@ -1,0 +1,62 @@
+[
+  { "id": "MSG001", "type": "ORDER",   "created": "2026-01-05", "amount": 120.50,        "vat": 20 },
+  { "id": "MSG002", "type": "INVOICE", "created": "2025-12-20", "amount": 89.00,         "vat": 20 },
+  { "id": "MSG003", "type": "ORDER",   "created": "2026-01-15", "amount": 10.00,         "vat": 10 },
+
+  { "id": "MIN001", "type": "ORDER",   "created": "1900-01-01", "amount": 0.01,          "vat": 0 },
+  { "id": "MAX001", "type": "INVOICE", "created": "9999-12-31", "amount": 999999999.99,  "vat": 100 },
+
+  { "id": "",       "type": "ORDER",   "created": "2026-02-01", "amount": 15.10,         "vat": 20 },
+
+  { "id": "SPACE",  "type": "ORDER",   "created": "2026-02-01", "amount": 15.10,         "vat": 20 },
+  { "id": "  ",     "type": "ORDER",   "created": "2026-02-01", "amount": 15.10,         "vat": 20 },
+
+  { "id": "DUP001", "type": "ORDER",   "created": "2026-03-01", "amount": 25.00,         "vat": 20 },
+  { "id": "DUP001", "type": "ORDER",   "created": "2026-03-02", "amount": 35.00,         "vat": 20 },
+
+  { "id": "BAD01",  "type": "UNKNOWN", "created": "2026-01-01", "amount": 10.00,         "vat": 20 },
+
+  { "id": "BAD02",  "type": null,      "created": "2026-01-01", "amount": 10.00,         "vat": 20 },
+
+  { "id": "BAD03",  "type": "ORDER",   "created": "2025-02-29", "amount": 10.00,         "vat": 20 },
+
+  { "id": "BAD04",  "type": "ORDER",   "created": "2024-02-29", "amount": 10.00,         "vat": 20 },
+
+  { "id": "BAD05",  "type": "ORDER",   "created": "2026-13-01", "amount": 10.00,         "vat": 20 },
+
+  { "id": "BAD06",  "type": "ORDER",   "created": "2026-00-01", "amount": 10.00,         "vat": 20 },
+
+  { "id": "BAD07",  "type": "ORDER",   "created": "2026-01-32", "amount": 10.00,         "vat": 20 },
+
+  { "id": "BAD08",  "type": "ORDER",   "created": "",           "amount": 10.00,         "vat": 20 },
+
+  { "id": "BAD09",  "type": "ORDER",   "created": null,         "amount": 10.00,         "vat": 20 },
+
+  { "id": "BAD10",  "type": "ORDER",   "created": "not-a-date", "amount": 10.00,         "vat": 20 },
+
+  { "id": "BAD11",  "type": "ORDER",   "created": "2026-01-01", "amount": -1.00,         "vat": 20 },
+
+  { "id": "BAD12",  "type": "ORDER",   "created": "2026-01-01", "amount": 0.00,          "vat": 20 },
+
+  { "id": "BAD13",  "type": "ORDER",   "created": "2026-01-01", "amount": null,          "vat": 20 },
+
+  { "id": "BAD14",  "type": "ORDER",   "created": "2026-01-01", "amount": "12.50",       "vat": 20 },
+
+  { "id": "BAD15",  "type": "ORDER",   "created": "2026-01-01", "amount": 1.7976931348623157E308, "vat": 20 },
+
+  { "id": "BAD16",  "type": "ORDER",   "created": "2026-01-01", "amount": 10.00,         "vat": -1 },
+
+  { "id": "BAD17",  "type": "ORDER",   "created": "2026-01-01", "amount": 10.00,         "vat": 101 },
+
+  { "id": "BAD18",  "type": "ORDER",   "created": "2026-01-01", "amount": 10.00,         "vat": null },
+
+  { "id": "BAD19",  "type": "ORDER",   "created": "2026-01-01", "amount": 10.00,         "vat": "20" },
+
+  { "id": "MISS01", "type": "ORDER",   "created": "2026-01-01", "vat": 20 },
+
+  { "id": "MISS02", "type": "ORDER",   "amount": 10.00,         "vat": 20 },
+
+  { "id": "MISS03", "created": "2026-01-01", "amount": 10.00,   "vat": 20 },
+
+  { "type": "ORDER", "created": "2026-01-01", "amount": 10.00,  "vat": 20 }
+]

@@ -45,23 +45,27 @@ public class Args {
     @Parameter(names = "--help", help = true)
     private boolean help;
 
+    public String getVstup() {
+        return vstup;
+    }
+
+    public String getVystup() {
+        return vystup;
+    }
+
+    public LocalDate getPlatnostOd() {
+        return platnostOd;
+    }
+
+    public LocalDate getPlatnostDo() {
+        return platnostDo;
+    }
 
     public static class PathDir implements IParameterValidator {
         public void validate(String name, String value) throws ParameterException {
             Path directory = Paths.get(value);
             if (!directory.toFile().isDirectory()) {
                 throw new ParameterException("Parameter " + name + " should be a directory");
-            }
-        }
-    }
-
-    public static class IODate implements IParameterValidator {
-        public void validate(String name, String value) throws ParameterException {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            try {
-                LocalDate.parse(value, formatter);
-            } catch (DateTimeParseException e) {
-                throw new ParameterException("Parameter " + name + " should be a valid date in format YYYY-MM-DD");
             }
         }
     }

@@ -20,17 +20,6 @@ public class MessageMapper {
         xsd.setId(dto.getId());
         xsd.setType(dto.getType());
 
-        // GregorianCalendar createdGC = new GregorianCalendar();
-        // createdGC.setTime(dto.getCreatedDate());
-        // xsd.setCreated(DatatypeFactory.newInstance().newXMLGregorianCalendar(createdGC));
-        
-        // try {
-        //     xsd.setCreated(DatatypeFactory.newInstance().newXMLGregorianCalendar(dto.getCreated()));
-        // }
-        // catch(DatatypeConfigurationException e) {
-        //     LOGGER.error("Couldn't parse created from String to XMLGregorianCalendar");
-        // }
-
         LocalDate createdLDate = LocalDate.parse(dto.getCreated());
         try {
             xsd.setCreated(DatatypeFactory.newInstance().newXMLGregorianCalendar(createdLDate.toString()));
