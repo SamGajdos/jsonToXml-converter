@@ -1,11 +1,8 @@
 package io.github.samGajdos.converter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.IParameterValidator;
-import com.beust.jcommander.IParametersValidator;
 import com.beust.jcommander.IStringConverter;
 import com.beust.jcommander.ParameterException;
 import java.time.format.DateTimeFormatter;

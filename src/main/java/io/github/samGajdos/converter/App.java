@@ -2,10 +2,8 @@ package io.github.samGajdos.converter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.ArrayList;
 import java.time.LocalDate;
@@ -18,11 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import generated.Messages;
 import generated.MessageType;
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.beust.jcommander.JCommander;
 import jakarta.validation.ConstraintViolation;
@@ -41,10 +36,10 @@ import org.apache.commons.io.FilenameUtils;
  * Date: June 2026
  */
 public class App {
-    
+
     private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
 
-    public static void main(String[] argv) throws Exception {
+    public static void main(final String[] argv) throws Exception {
         
         Args args = processArgs(argv);
         String inputDir = args.getVstup();
