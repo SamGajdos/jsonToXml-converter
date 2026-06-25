@@ -18,6 +18,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.File;
 
+
+/**
+ * JSON to XML Converter
+ * CLI Arguments parser
+ * Author: Samuel Gajdos with a help of docs, forums and LLMs
+ * Date: June 2026
+ */
 public class Args {
     @Parameter
     private List<String> parameters = new ArrayList<>();

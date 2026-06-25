@@ -9,6 +9,13 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.DatatypeConfigurationException;
 import generated.MessageType;
 
+
+/**
+ * JSON to XML Converter
+ * Mapper from DTO to XSD class
+ * Author: Samuel Gajdos with a help of docs, forums and LLMs
+ * Date: June 2026
+ */
 public class MessageMapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageMapper.class);

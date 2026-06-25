@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.ArrayList;
 import java.time.LocalDate;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -35,7 +36,8 @@ import org.apache.commons.io.FilenameUtils;
 
 /**
  * JSON to XML Converter
- * Author: Samuel Gajdos
+ * Main App class
+ * Author: Samuel Gajdos with a help of docs, forums and LLMs
  * Date: June 2026
  */
 public class App {
@@ -50,20 +52,27 @@ public class App {
         LocalDate validFrom = args.getPlatnostOd();
         LocalDate validTo = args.getPlatnostDo();
 
-        List<Path> jsonPaths = jsonFilePaths(inputDir);
+        List<Path> jsonPaths = new ArrayList<Path>();
+        try {
+            jsonPaths = jsonFilePaths(inputDir);
+        } catch(Exception e){
+            logErrorWithExit(e.getMessage());
+        }
 
         // Iterate through files
-        for(Path jPath : jsonPaths) {
-            //String testJson = new String(Files.readAllBytes(jPath));
-
-            //LOGGER.info(testJson);
-            
+        for(Path jPath : jsonPaths) {            
             // Read json items - Messages
             ObjectMapper objectMapper = new ObjectMapper();
-            LOGGER.info(jPath.toString());
             // TODO ad try catch for jsonParseException
-            List<MessageDto> messages = objectMapper.readValue(jPath.toFile(), new TypeReference<List<MessageDto>>(){});            
-             Messages messagesXml = new Messages();
+            List<MessageDto> messages;
+            try {
+                messages = objectMapper.readValue(jPath.toFile(), new TypeReference<List<MessageDto>>(){});            
+            } catch(Exception e) {
+                LOGGER.error("Couldn't read JSON file: " + jPath.toString() +
+                             " " + e.getMessage() + "\nSkipping.\n");
+                continue;
+            }
+            Messages messagesXml = new Messages();
 
             for (MessageDto message : messages) {  
                 String errors = validate(message, validFrom, validTo);
@@ -72,7 +81,6 @@ public class App {
                    continue; 
                 }
 
-                // TODO add try catch block here?
                 message.setAmountWithVat(calculateAmountWithVat(message));
                 
                 //Map to xsd schema: MessageDto -> MessageType
