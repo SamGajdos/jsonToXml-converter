@@ -5,7 +5,7 @@
 
   <groupId>io.github.samGajdos.converter</groupId>
   <artifactId>jsonToXml-converter</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
 
   <name>jsonToXml-converter</name>
   <url>https://github.com/SamGajdos/jsonToXml-converter</url>

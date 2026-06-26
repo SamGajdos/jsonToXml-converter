@@ -58,7 +58,6 @@ public class App {
         for(Path jPath : jsonPaths) {            
             // Read json items - Messages
             ObjectMapper objectMapper = new ObjectMapper();
-            // TODO ad try catch for jsonParseException
             List<MessageDto> messages;
             try {
                 messages = objectMapper.readValue(jPath.toFile(), new TypeReference<List<MessageDto>>(){});            
