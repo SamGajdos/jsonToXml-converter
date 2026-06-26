@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+  <xs:element name="Messages">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Message"
+                    type="MessageType"
+                    minOccurs="0"
+                    maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="MessageType">
+    <xs:sequence>
+      <xs:element name="Id" type="xs:string"/>
+      <xs:element name="Type" type="xs:string"/>
+      <xs:element name="Created" type="xs:date"/>
+      <xs:element name="Amount" type="xs:decimal"/>
+      <xs:element name="Vat" type="VatPercentType"/>
+      <xs:element name="AmountWithVat" type="xs:decimal"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="VatPercentType">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="100"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
